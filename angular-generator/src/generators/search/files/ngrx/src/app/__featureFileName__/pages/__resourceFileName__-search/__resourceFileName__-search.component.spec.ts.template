@@ -229,6 +229,7 @@ describe('<%= resourceClassName %>SearchComponent', () => {
     component.<%= resourcePropertyName %>SearchFormGroup.patchValue({ changeMe: 'typed' });
     store.overrideSelector(select<%= resourceClassName %>SearchViewModel, {
       ...base<%= resourceClassName %>SearchViewModel,
+      searchCriteria: { ...base<%= resourceClassName %>SearchViewModel.searchCriteria },
       results: [],
       searchLoadingIndicator: true
     });
