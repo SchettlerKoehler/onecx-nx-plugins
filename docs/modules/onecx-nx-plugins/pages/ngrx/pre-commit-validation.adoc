@@ -21,13 +21,18 @@ Generating a repository does not download the hook.
 |`format` |Write formatting changes.
 |`build` |Build the application.
 |`test:ci` |Run Jest (Angular) or Vitest (React) without watching, with coverage.
-|`sonar` |Run SonarScanner; server configuration and credentials must be supplied.
+|`sonar:scan` |Run SonarScanner manually; server configuration and credentials must be supplied.
 |===
 
 `lint` and `prettier` run on every commit. `build`, `test:ci`, `sonar`,
 `test:arch` and `test:a11y` run only when `CI` or `FORCE_CI_COMMIT_HOOKS`
 is non-empty, and only if the corresponding npm script exists.
 No placeholder architecture or accessibility tests are generated.
+Sonar is opt-in: after supplying a real project configuration, server and
+credentials, add the hook entrypoint with
+`npm pkg set 'scripts.sonar=npm run sonar:scan'`.
+New repositories deliberately do not define `sonar`, so CI commits are not blocked
+by an unconfigured external service. Existing custom `sonar` scripts are retained.
 Use `EXTRA_LINT_SCRIPTS` for additional always-run scripts and
 `EXTRA_QA_SCRIPTS` for additional CI-gated scripts (space-separated names).
 

@@ -11,15 +11,22 @@ import { join } from 'path';
 type Framework = 'angular' | 'react';
 
 export function configureQualityChecks(tree: Tree, framework: Framework) {
-  const angular = framework === 'angular';
+  const stylelintConfig = {
+    angular: {
+      packageName: 'stylelint-config-standard-scss',
+      version: '^14.0.0',
+    },
+    react: {
+      packageName: 'stylelint-config-standard',
+      version: '^38.0.0',
+    },
+  }[framework];
   addDependenciesToPackageJson(
     tree,
     {},
     {
       stylelint: '^16.18.0',
-      [angular
-        ? 'stylelint-config-standard-scss'
-        : 'stylelint-config-standard']: angular ? '^14.0.0' : '^38.0.0',
+      [stylelintConfig.packageName]: stylelintConfig.version,
     }
   );
 
@@ -45,9 +52,7 @@ export function configureQualityChecks(tree: Tree, framework: Framework) {
       configPath,
       JSON.stringify(
         {
-          extends: angular
-            ? 'stylelint-config-standard-scss'
-            : 'stylelint-config-standard',
+          extends: stylelintConfig.packageName,
           ignoreFiles: [
             'node_modules/**',
             'dist/**',
@@ -57,7 +62,7 @@ export function configureQualityChecks(tree: Tree, framework: Framework) {
           ],
           rules: {
             'no-empty-source': null,
-            ...(angular
+            ...(framework === 'angular'
               ? {}
               : {
                   'at-rule-no-unknown': [
@@ -97,14 +102,14 @@ export function configureQualityChecks(tree: Tree, framework: Framework) {
       prettier: 'prettier --check .',
       'test:ci': 'nx test --watch=false --coverage',
     };
+    const legacyDefaults: Record<string, string> = {
+      lint: 'nx lint',
+      'lint:fix': 'nx lint --fix',
+      'test:ci':
+        'nx test --watch=false --browsers=ChromeHeadless --code-coverage',
+    };
     for (const [name, command] of Object.entries(scripts)) {
-      if (
-        !pkg.scripts[name] ||
-        pkg.scripts[name] === 'nx lint' ||
-        pkg.scripts[name] === 'nx lint --fix' ||
-        pkg.scripts[name] ===
-          'nx test --watch=false --browsers=ChromeHeadless --code-coverage'
-      ) {
+      if (!pkg.scripts[name] || pkg.scripts[name] === legacyDefaults[name]) {
         pkg.scripts[name] = command;
       } else if (pkg.scripts[name] !== command && name === 'lint') {
         throw new Error(

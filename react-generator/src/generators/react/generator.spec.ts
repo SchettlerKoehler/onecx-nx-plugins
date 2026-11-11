@@ -25,12 +25,14 @@ describe('React quality guardrails', () => {
           prepare: 'husky',
           lint: 'npm run lint:eslint && npm run lint:styles',
           prettier: 'prettier --check .',
+          'sonar:scan': 'sonar-scanner',
         },
         devDependencies: {
           husky: '^9.1.7',
           'stylelint-config-standard': '^38.0.0',
         },
       });
+      expect(readJson(tree, 'package.json').scripts.sonar).toBeUndefined();
       expect(
         readJson(tree, '.stylelintrc.json').rules['at-rule-no-unknown'][1]
           .ignoreAtRules

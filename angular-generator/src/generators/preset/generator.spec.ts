@@ -26,12 +26,14 @@ describe('preset quality guardrails', () => {
           lint: 'npm run lint:eslint && npm run lint:styles',
           prettier: 'prettier --check .',
           'test:ci': 'nx test --watch=false --coverage',
+          'sonar:scan': 'sonar-scanner',
         },
         devDependencies: {
           husky: '^9.1.7',
           'stylelint-config-standard-scss': '^14.0.0',
         },
       });
+      expect(readJson(tree, 'package.json').scripts.sonar).toBeUndefined();
     },
     60000
   );

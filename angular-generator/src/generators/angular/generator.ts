@@ -277,7 +277,7 @@ function addScriptsToPackageJson(tree: Tree, options: AngularGeneratorSchema) {
     pkgJson.scripts['format'] = 'prettier --write .';
     pkgJson.scripts['lint'] = 'nx lint';
     pkgJson.scripts['lint:fix'] = 'nx lint --fix';
-    pkgJson.scripts['sonar'] = 'npx sonar-scanner';
+    pkgJson.scripts['sonar:scan'] = 'sonar-scanner';
     pkgJson.scripts['test'] = 'nx test';
     pkgJson.scripts['test:ci'] =
       'nx test --watch=false --coverage';
