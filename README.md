@@ -19,6 +19,37 @@ npx nx run-many --targets publish --ver 1.0.0 --tag latest --skip-nx-cache
 
 ## Local Development
 
+Before building the Angular or React generator, snapshot the current shared
+pre-commit template:
+
+```sh
+npm run prepare:templates
+npm run build
+```
+
+The template is downloaded from `onecx/onecx-ai-workflows` at its current `main`
+commit. To reproduce a previous snapshot, pass its commit SHA:
+`npm run prepare:templates -- <sha>`.
+For a private upstream repository, set `GH_TOKEN` to a token with contents-read
+access to that repository. Releases reuse `CI_PAT`, which must have contents-read
+access to the upstream repository. Trusted CI runs reuse the same token.
+Fork PR workflows do not receive this secret, so this build job only runs on
+trusted pushes and same-repository PRs. For a fork PR, a maintainer must review
+the commit and mirror its exact SHA to a temporary upstream branch to run trusted
+CI before merging. Missing access in a trusted run fails explicitly rather than
+packaging an outdated hook.
+
+Downloaded files live in Git-ignored `files-upstream` directories and are copied
+into both npm packages by an explicit step after compilation (Nx 19 excludes
+Git-ignored assets). Nx hashes their contents explicitly, including during
+the release rebuild. The packaged `provenance.json` records the upstream commit,
+source path and SHA-256 checksum. Downloaded templates must not be committed.
+
+New Angular, NgRx, standalone NgRx and React repositories install Husky quality
+guardrails by default. See the
+[pre-commit guide](docs/modules/onecx-nx-plugins/pages/ngrx/pre-commit-validation.adoc)
+for the generated scripts and optional secret/commit-message checks.
+
 To use the created generator locally, you can use [Verdaccio](https://verdaccio.org/) which provides a local registry for npm packages. +
 This is primarily useful for changes within the `create_workspace` subproject. If you have only made changes to the `angular-generator`, copying the build result to the target directory `node_modules` (see below) is simpler and recommended.
 

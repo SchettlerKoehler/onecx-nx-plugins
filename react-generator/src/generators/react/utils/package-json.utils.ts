@@ -35,7 +35,7 @@ export function addScriptsToPackageJson(tree: Tree) {
     pkgJson.scripts['preview:host'] = 'vite preview --host';
     pkgJson.scripts['clean'] =
       'npm cache clean --force && npx clear-npx-cache && rm -rf *.log dist reports .nx .eslintcache ./node_modules/.cache/prettier/.prettier-cache';
-    pkgJson.scripts['format'] = 'nx format:write --uncommitted';
+    pkgJson.scripts['format'] = 'prettier --write .';
     pkgJson.scripts['lint'] = 'nx lint';
     pkgJson.scripts['lint:fix'] = 'nx lint --fix';
     pkgJson.scripts['sonar'] = 'npx sonar-scanner';

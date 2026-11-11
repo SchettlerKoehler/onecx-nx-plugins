@@ -15,7 +15,11 @@ import { execSync } from 'child_process';
 import * as ora from 'ora';
 
 import processParams, { GeneratorParameter } from '../shared/parameters.utils';
-import { safeReplace } from '@onecx/generator-utils';
+import {
+  configurePreCommit,
+  configureQualityChecks,
+  safeReplace,
+} from '@onecx/generator-utils';
 import { GeneratorProcessor } from '../shared/generator.utils';
 import { AngularGeneratorSchema } from './schema';
 import { GeneralOpenAPIStep } from './steps/general-openapi.step';
@@ -101,6 +105,11 @@ export async function angularGenerator(
   addBaseToPackageJson(tree, options);
   addScriptsToPackageJson(tree, options);
   addExtensionsToPackageJson(tree);
+  configureQualityChecks(tree, 'angular');
+  configurePreCommit(
+    tree,
+    joinPathFragments(__dirname, '../pre-commit-validation/files-upstream')
+  );
 
   const oneCXLibVersion = '^8.7.0';
   const angularVersion = '^21.2.9';
@@ -227,14 +236,9 @@ export async function angularGenerator(
     log(cmd);
     execSync(cmd, { cwd: tree.root, stdio: 'inherit' });
 
-    const files = tree
-      .listChanges()
-      .map((c) => c.path)
-      .filter((p) => p.endsWith('.ts'))
-      .join(' ');
-    cmd = 'npx prettier --write ';
+    cmd = 'npm run format';
     log(cmd);
-    execSync(cmd + files, { cwd: tree.root, stdio: 'inherit' });
+    execSync(cmd, { cwd: tree.root, stdio: 'inherit' });
   };
 }
 
@@ -270,13 +274,13 @@ function addScriptsToPackageJson(tree: Tree, options: AngularGeneratorSchema) {
     ] = `mv "$(find dist/${options['name']} -maxdepth 1 -type f -name 'styles.*.css' | head -n 1)" dist/${options['name']}/styles.css`;
     pkgJson.scripts['clean'] =
       'npm cache clean --force && npx clear-npx-cache && rm -rf *.log dist reports .nx .angular .eslintcache ./node_modules/.cache/prettier/.prettier-cache';
-    pkgJson.scripts['format'] = 'nx format:write --uncommitted';
+    pkgJson.scripts['format'] = 'prettier --write .';
     pkgJson.scripts['lint'] = 'nx lint';
     pkgJson.scripts['lint:fix'] = 'nx lint --fix';
     pkgJson.scripts['sonar'] = 'npx sonar-scanner';
     pkgJson.scripts['test'] = 'nx test';
     pkgJson.scripts['test:ci'] =
-      'nx test --watch=false --browsers=ChromeHeadless --code-coverage';
+      'nx test --watch=false --coverage';
     return pkgJson;
   });
 }
