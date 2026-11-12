@@ -42,6 +42,8 @@ module.exports = [
   {
     files: ['**/*.ts'],
     rules: {
+      // OneCX supports NgModule-based and standalone components.
+      '@angular-eslint/prefer-standalone': 'off',
       "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "none" }],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@angular-eslint/directive-selector': [
