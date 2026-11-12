@@ -20,6 +20,9 @@ describe('preset quality guardrails', () => {
 
       expect(tree.exists('.husky/pre-commit')).toBe(true);
       expect(tree.exists('scripts/pre-commit-qa')).toBe(true);
+      expect(tree.read('AGENTS.md')!.toString()).toContain(
+        'https://angular.dev/ai/develop-with-ai'
+      );
       expect(readJson(tree, 'package.json')).toMatchObject({
         scripts: {
           prepare: 'husky',
@@ -34,6 +37,33 @@ describe('preset quality guardrails', () => {
         },
       });
       expect(readJson(tree, 'package.json').scripts.sonar).toBeUndefined();
+      const entrypoint = tree
+        .read('src/app/app-entrypoint.component.ts')!
+        .toString();
+      expect(entrypoint).not.toContain('standalone: false');
+      expect(entrypoint).toContain('imports: [RouterOutlet]');
+      expect(entrypoint).toContain(
+        'changeDetection: ChangeDetectionStrategy.OnPush'
+      );
+      const remoteModule = tree
+        .read('src/app/onecx-example.remote.module.ts')!
+        .toString();
+      expect(remoteModule).not.toContain('declarations:');
+      expect(remoteModule).toContain('AppEntrypointComponent,');
+      expect(remoteModule).toContain(
+        "createAppEntrypoint(AppEntrypointComponent, 'ocx-example-component'"
+      );
+      if (flavor === 'standalone-ngrx') {
+        expect(tree.read('src/app/app.component.ts')!.toString()).not.toContain(
+          'standalone: false'
+        );
+        expect(tree.read('src/app/app.module.ts')!.toString()).not.toContain(
+          'bootstrap: [AppComponent]'
+        );
+        expect(
+          tree.read('src/app/app.component.spec.ts')!.toString()
+        ).not.toContain('declarations:');
+      }
     },
     60000
   );

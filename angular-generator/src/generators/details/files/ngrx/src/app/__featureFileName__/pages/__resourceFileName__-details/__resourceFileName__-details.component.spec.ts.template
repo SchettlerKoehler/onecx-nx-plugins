@@ -98,8 +98,8 @@ describe('<%= resourceClassName %>DetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [<%= resourceClassName %>DetailsComponent],
       imports: [
+        <%= resourceClassName %>DetailsComponent,
         AngularAcceleratorModule,
         PortalPageComponent,
         LetDirective,
@@ -157,7 +157,7 @@ describe('<%= resourceClassName %>DetailsComponent', () => {
 
     fixture = TestBed.createComponent(<%= resourceClassName %>DetailsComponent);
     component = fixture.componentInstance;
-    breadcrumbService = TestBed.inject(BreadcrumbService);
+    breadcrumbService = fixture.debugElement.injector.get(BreadcrumbService);
     fixture.detectChanges();
     <%= resourcePropertyName %>Details = await TestbedHarnessEnvironment.harnessForFixture(
       fixture,
