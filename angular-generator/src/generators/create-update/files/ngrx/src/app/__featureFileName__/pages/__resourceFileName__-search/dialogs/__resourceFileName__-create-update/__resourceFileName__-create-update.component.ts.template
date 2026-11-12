@@ -1,4 +1,4 @@
-import { Component, effect, EventEmitter, input, OnInit, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, EventEmitter, input, OnInit, Signal } from '@angular/core';
 
 import { FormControl, FormGroup, Validators, FormControlStatus, ReactiveFormsModule } from '@angular/forms';
 
@@ -20,6 +20,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
   selector: 'app-<%= resourceFileName %>-create-update',
   templateUrl: './<%= resourceFileName %>-create-update.component.html',
   styleUrls: ['./<%= resourceFileName %>-create-update.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AngularAcceleratorModule,
     TranslatePipe,

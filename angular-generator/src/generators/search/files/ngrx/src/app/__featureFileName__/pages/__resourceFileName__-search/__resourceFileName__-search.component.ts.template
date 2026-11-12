@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, LOCALE_ID, OnInit, viewChildren, Signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, effect, inject, LOCALE_ID, OnInit, viewChildren, Signal } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { Store } from '@ngrx/store'
 import { PrimeIcons } from 'primeng/api'
@@ -35,6 +35,7 @@ import { <%= resourceClassName %>SearchViewModel } from './<%= resourceFileName 
   selector: 'app-<%= resourceFileName %>-search',
   templateUrl: './<%= resourceFileName %>-search.component.html',
   styleUrls: ['./<%= resourceFileName %>-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AngularAcceleratorModule,
     PortalPageComponent,

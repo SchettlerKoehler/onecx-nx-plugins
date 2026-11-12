@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AngularAcceleratorModule } from '@onecx/angular-accelerator';
@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
   selector: 'app-<%= pageFileName %>',
   templateUrl: './<%= pageFileName %>.component.html',
   styleUrls: ['./<%= pageFileName %>.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AngularAcceleratorModule,
     PortalPageComponent,

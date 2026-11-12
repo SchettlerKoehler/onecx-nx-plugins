@@ -1,9 +1,14 @@
 /** @jest-environment node */
-import { readJson } from '@nx/devkit';
+import { readJson, Tree } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import presetGenerator from './generator';
+import featureGenerator from '../feature/generator';
+import searchGenerator from '../search/generator';
+import detailsGenerator from '../details/generator';
+import createUpdateGenerator from '../create-update/generator';
+import pageGenerator from '../ngrx-page/generator';
 
 describe('preset quality guardrails', () => {
   const argv = process.argv;
@@ -74,4 +79,100 @@ describe('preset quality guardrails', () => {
     },
     60000
   );
+
+  describe('generated page best practices', () => {
+    let tree: Tree;
+
+    beforeAll(async () => {
+      const originalArgv = process.argv;
+      process.argv = [
+        ...originalArgv,
+        '--resource',
+        'Book',
+        '--pageName',
+        'Overview',
+        '--pageTitle',
+        'Overview',
+      ];
+      try {
+        tree = createTreeWithEmptyWorkspace();
+        await presetGenerator(tree, { name: 'example', flavor: 'ngrx' });
+        await featureGenerator(tree, {
+          name: 'books',
+          resource: 'Book',
+          customizeNamingForAPI: false,
+          existStrategy: 'skip',
+        });
+        const options = {
+          featureName: 'books',
+          resource: 'Book',
+          customizeNamingForAPI: false,
+          serviceName: 'BookAPIService',
+          updateRequestName: 'UpdateBookRequest',
+          updateResponseName: 'UpdateBookResponse',
+        };
+        await searchGenerator(tree, {
+          ...options,
+          existStrategy: 'skip',
+          searchRequestName: 'SearchBooksRequest',
+          searchResponseName: 'SearchBooksResponse',
+        });
+        await detailsGenerator(tree, {
+          ...options,
+          getResponseName: 'GetBookResponse',
+          editMode: true,
+          allowDelete: true,
+        });
+        await createUpdateGenerator(tree, {
+          ...options,
+          createRequestName: 'CreateBookRequest',
+          createResponseName: 'CreateBookResponse',
+          createRequestPropertyName: 'createBookRequest',
+          createResponsePropertyName: 'createBookResponse',
+          updateRequestPropertyName: 'updateBookRequest',
+          updateResponsePropertyName: 'updateBookResponse',
+        });
+        await pageGenerator(tree, {
+          featureName: 'books',
+          pageName: 'Overview',
+          pageTitle: 'Overview',
+        });
+      } finally {
+        process.argv = originalArgv;
+      }
+    }, 60000);
+
+    it('sets OnPush on every generated page and dialog component', () => {
+      for (const component of [
+        'book-search/book-search',
+        'book-details/book-details',
+        'book-search/dialogs/book-create-update/book-create-update',
+        'overview/overview',
+      ]) {
+        const content = tree
+          .read(`src/app/books/pages/${component}.component.ts`)!
+          .toString();
+        expect(content).toContain('ChangeDetectionStrategy');
+        expect(content).toContain(
+          'changeDetection: ChangeDetectionStrategy.OnPush'
+        );
+      }
+    });
+
+    it('uses inject() in effects while preserving parent route resolution', () => {
+      const effects = tree
+        .read('src/app/books/pages/overview/overview.effects.ts')!
+        .toString();
+      expect(effects).not.toContain('constructor(');
+      expect(effects).toContain('inject(ActivatedRoute, { skipSelf: true })');
+      for (const dependency of [
+        'Actions',
+        'Router',
+        'Store',
+        'PortalMessageService',
+      ]) {
+        expect(effects).toContain(`inject(${dependency})`);
+      }
+    });
+  });
 });
