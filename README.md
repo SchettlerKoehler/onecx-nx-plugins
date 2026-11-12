@@ -50,6 +50,14 @@ guardrails by default. See the
 [pre-commit guide](docs/modules/onecx-nx-plugins/pages/ngrx/pre-commit-validation.adoc)
 for the generated scripts and optional secret/commit-message checks.
 
+Generated Angular applications pin `@angular-devkit/build-angular` to 21.2.9
+and its matching Webpack 5.105.2. Later builder patches select Webpack 5.112,
+whose runtime hashing API is incompatible with the current enhanced federation
+plugin. Upgrade this build-tool pair together only after the generated application
+builds pass. Runtime peers required by OneCX libraries and their testing support
+are declared explicitly so generated builds and tests do not depend on accidental
+transitive installation.
+
 To use the created generator locally, you can use [Verdaccio](https://verdaccio.org/) which provides a local registry for npm packages. +
 This is primarily useful for changes within the `create_workspace` subproject. If you have only made changes to the `angular-generator`, copying the build result to the target directory `node_modules` (see below) is simpler and recommended.
 
