@@ -1,23 +1,24 @@
 # Angular application guidance
 
-Generated apps target Angular 21; framework dependency ranges allow patch updates, while only the builder is pinned. The Angular AI guidance at https://angular.dev/ai/develop-with-ai includes Angular 22+ defaults: `OnPush` is still opt-in in Angular 21, Signal Forms are not yet stable, and `@Injectable({ providedIn: 'root' })` remains the standard singleton service pattern.
+Before changing Angular components, templates, state, forms, or services, read
+[best-practices.md](./best-practices.md). This upstream snapshot is bundled locally;
+no download or network permission is required.
 
-## New Angular code
+The following compatibility rules take precedence over the upstream snapshot.
 
-- Prefer standalone components, directives, and pipes. Standalone is the default; omit `standalone: true`. List every component, directive, and pipe used by a standalone template in its `imports`.
+## Angular 21 compatibility
+
+Generated apps target Angular 21; framework dependency ranges allow patch updates,
+while only the builder is pinned. Some upstream recommendations require Angular 22:
+
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` on new components.
-- Use `input()` and `output()` for new component APIs, and `inject()` for dependency injection.
-- Use signals for local component state and `computed()` for derived values. Keep established NgRx feature state as the source of truth for shared or feature state; do not replace it with component signals.
-- Use native template control flow (`@if`, `@for`, `@switch`) in new templates. Prefer direct `class` and `style` bindings over `NgClass` and `NgStyle`.
-- Prefer lazy-loaded feature routes. Use Reactive Forms for new forms; Signal Forms are not stable in Angular 21.
-- Use `NgOptimizedImage` for static image assets when applicable; inline data images are an exception.
-- Put host bindings in the component or directive `host` metadata.
-- Keep templates focused and accessible: use semantic elements, associated labels, keyboard-operable controls, and deliberate focus handling. Meet WCAG AA and pass applicable axe accessibility checks.
-- Use strict types, infer obvious types, and prefer `unknown` to `any` when a value is uncertain.
+- Use Reactive Forms for new forms; Signal Forms are not stable in Angular 21.
+- Use `@Injectable({ providedIn: 'root' })` for singleton services rather than `@Service`.
 
 ## OneCX integration and existing code
 
 - Preserve the NgModule adapters required by OneCX remote registration and bootstrap, along with existing NgRx feature wiring. Do not remove or redesign these integration boundaries as part of routine component work.
+- Use signals for local component state. Keep established NgRx feature state as the source of truth for shared or feature state.
 - Follow established patterns in untouched code; modernize only code in scope rather than mass-rewriting templates, state, or module boundaries.
 
 ## Completion

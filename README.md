@@ -66,9 +66,11 @@ all Angular flavors now use standalone components.
 
 OneCX remote registration/bootstrap and NgRx lazy feature wiring retain their
 NgModule adapters. Keep those integration contracts when extending a generated
-application. Each Angular app includes an `AGENTS.md` with Angular 21-compatible
-recommendations based on [Angular's AI guidance](https://angular.dev/ai/develop-with-ai),
-including the explicit `OnPush` setting required before Angular 22.
+application. Each Angular app includes an `AGENTS.md` pointing to a bundled
+`best-practices.md` snapshot of [Angular's AI guidance](https://angular.dev/ai/develop-with-ai),
+with its MIT license and attribution. Agents can read the guidance without network
+access. The `AGENTS.md` compatibility rules take precedence over newer upstream
+recommendations, including the explicit `OnPush` setting required before Angular 22.
 
 To use the created generator locally, you can use [Verdaccio](https://verdaccio.org/) which provides a local registry for npm packages. +
 This is primarily useful for changes within the `create_workspace` subproject. If you have only made changes to the `angular-generator`, copying the build result to the target directory `node_modules` (see below) is simpler and recommended.

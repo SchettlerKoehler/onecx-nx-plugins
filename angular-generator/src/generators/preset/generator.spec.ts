@@ -1,6 +1,8 @@
 /** @jest-environment node */
 import { readJson } from '@nx/devkit';
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import presetGenerator from './generator';
 
 describe('preset quality guardrails', () => {
@@ -21,8 +23,13 @@ describe('preset quality guardrails', () => {
       expect(tree.exists('.husky/pre-commit')).toBe(true);
       expect(tree.exists('scripts/pre-commit-qa')).toBe(true);
       expect(tree.read('AGENTS.md')!.toString()).toContain(
-        'https://angular.dev/ai/develop-with-ai'
+        '[best-practices.md](./best-practices.md)'
       );
+      for (const file of ['best-practices.md', 'best-practices.LICENSE']) {
+        expect(tree.read(file)?.toString()).toBe(
+          readFileSync(join(__dirname, '../angular/files', file), 'utf8')
+        );
+      }
       expect(readJson(tree, 'package.json')).toMatchObject({
         scripts: {
           prepare: 'husky',
